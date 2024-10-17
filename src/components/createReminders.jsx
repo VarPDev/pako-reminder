@@ -36,11 +36,12 @@ export default function CreateReminders() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert(
-      `${formData.title}, Body: ${formData.body}, ${JSON.stringify(
-        formData.days
-      )}`
-    );
+    window.saveReminder(formData);
+    // alert(
+    //   `${formData.title}, Body: ${formData.body}, ${JSON.stringify(
+    //     formData.days
+    //   )}`
+    // );
   };
 
   return (

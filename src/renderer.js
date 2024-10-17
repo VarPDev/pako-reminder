@@ -41,6 +41,10 @@ window.sendNotification = ({ title, body }) => {
   // };
 };
 
+window.saveReminder = (reminder) => {
+  electronAPI.saveReminder(reminder);
+};
+
 console.log(
   '👋 This message is being logged by "renderer.js", included via webpack'
 );

@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain, Notification } = require("electron");
 const path = require("node:path");
 const { channels } = require("./shared/constants");
+import Store from "electron-store";
+
+const store = new Store();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -33,6 +36,14 @@ const createWindow = () => {
     //   // event.sender.send(channels.SEND_NOTIFICATION, true);
     //   // document.getElementById("output").innerText = CLICK_MESSAGE;
     // };
+  });
+
+  ipcMain.on(channels.SAVE_REMINDER, (event, reminder) => {
+    const old = store.get("reminders");
+    store.set(
+      "reminders",
+      old && Array.isArray(old) ? [...old, reminder] : [reminder]
+    );
   });
 
   // and load the index.html of the app.

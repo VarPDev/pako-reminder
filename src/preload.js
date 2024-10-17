@@ -6,4 +6,7 @@ const { channels } = require("./shared/constants");
 contextBridge.exposeInMainWorld("electronAPI", {
   sendNotification: (params) =>
     ipcRenderer.send(channels.SEND_NOTIFICATION, params),
+  saveReminder: (params) => {
+    return ipcRenderer.send(channels.SAVE_REMINDER, params);
+  },
 });

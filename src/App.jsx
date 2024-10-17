@@ -18,12 +18,12 @@ export default function App() {
 
   return (
     <div>
-      <div id="output" className="font-bold">
+      {/* <div id="output" className="font-bold">
         Testing
-      </div>
-      <button className="btn" onClick={sendNotification}>
+      </div> */}
+      {/* <button className="btn" onClick={sendNotification}>
         notifica
-      </button>
+      </button> */}
       <div role="tablist" className="tabs tabs-bordered">
         <a
           role="tab"
