@@ -1,4 +1,5 @@
 import React from "react";
+import Reminders from "./components/reminders.jsx";
 
 // const { ipcRenderer } = window.require('electron');
 
@@ -10,9 +11,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen max-h-full bg-zinc-950">
-      <div id="output" className="font-bold text-white">Testing</div>
+    <div>
+      <div id="output" className="font-bold">Testing</div>
       <button onClick={sendNotification}>notifica</button>
+      <Reminders />
     </div>
   );
 }
