@@ -6,6 +6,17 @@ const { isAfter, isSameDay } = require("date-fns");
 
 const store = new Store();
 
+const reminders = store.get("reminders");
+
+if (!reminders) {
+  store.set("reminders", []);
+}
+
+const delReminders = store.get("del_reminders");
+if (!delReminders) {
+  store.set("del_reminders", []);
+}
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -49,7 +60,12 @@ const createWindow = () => {
     return reminders;
   });
 
-  ipcMain.handle(channels.DEL_REMINDER, (event, id) => {
+  ipcMain.handle(channels.GET_DEL_REMINDERS, (event) => {
+    const delReminders = store.get("del_reminders");
+    return delReminders;
+  });
+
+  ipcMain.on(channels.DEL_REMINDER, (event, id) => {
     const reminders = store.get("reminders");
 
     const remToDelete = reminders.find((r) => r.id === id);

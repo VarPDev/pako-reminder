@@ -49,6 +49,10 @@ window.getReminders = () => {
   return electronAPI.getReminders();
 };
 
+window.getDelReminders = () => {
+  return electronAPI.getDelReminders();
+};
+
 window.delReminder = (id) => {
   electronAPI.delReminder(id);
 };

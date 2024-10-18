@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CreateReminders from "./components/createReminders.jsx";
 import Reminders from "./components/reminders.jsx";
+import RemindersBusket from "./components/remindersBusket.jsx";
 
 // const { ipcRenderer } = window.require('electron');
 
@@ -39,8 +40,17 @@ export default function App() {
         >
           Add
         </a>
+        <a
+          role="tab"
+          className={`tab ${tabSelected === 2 ? "tab-active" : ""}`}
+          onClick={() => onSelectTab(2)}
+        >
+          Busket
+        </a>
       </div>
-      {tabSelected === 0 ? <Reminders /> : <CreateReminders />}
+      {tabSelected === 0 && <Reminders />}
+      {tabSelected === 1 && <CreateReminders />}
+      {tabSelected === 2 && <RemindersBusket />}
     </div>
   );
 }
