@@ -11,10 +11,10 @@ export default function Reminders() {
     setReminders(await window.getReminders());
   };
 
-  const onDelReminder = (id) => () => {
+  const onDelReminder = (id) => {
     console.log("🚀 ~ onDelReminder ~ id:", id);
-    // window.delReminder(id);
-    // setReminders(reminders.filter((r) => r.id !== id));
+    window.delReminder(id);
+    setReminders(reminders.filter((r) => r.id !== id));
   };
 
   return (
