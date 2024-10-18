@@ -51,9 +51,18 @@ const createWindow = () => {
 
   ipcMain.handle(channels.DEL_REMINDER, (event, id) => {
     const reminders = store.get("reminders");
+
+    const remToDelete = reminders.find((r) => r.id === id);
+
     store.set(
       "reminders",
       reminders.filter((r) => r.id !== id)
+    );
+
+    const old = store.get("del_reminders");
+    store.set(
+      "del_reminders",
+      old && Array.isArray(old) ? [...old, remToDelete] : [remToDelete]
     );
   });
 
