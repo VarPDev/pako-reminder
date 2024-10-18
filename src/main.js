@@ -46,6 +46,11 @@ const createWindow = () => {
     );
   });
 
+  ipcMain.handle(channels.GET_REMINDERS, (event) => {
+    const reminders = store.get("reminders");
+    return reminders;
+  });
+
   // and load the index.html of the app.
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 

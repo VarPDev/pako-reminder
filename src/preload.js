@@ -9,4 +9,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   saveReminder: (params) => {
     return ipcRenderer.send(channels.SAVE_REMINDER, params);
   },
+  getReminders: (params) => {
+    return ipcRenderer.invoke(channels.GET_REMINDERS, params);
+  },
 });
