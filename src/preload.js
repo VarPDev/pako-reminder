@@ -16,6 +16,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     return ipcRenderer.invoke(channels.GET_DEL_REMINDERS, params);
   },
   delReminder: (id) => {
-    return ipcRenderer.invoke(channels.DEL_REMINDER, id);
+    return ipcRenderer.send(channels.DEL_REMINDER, id);
   },
 });

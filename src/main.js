@@ -11,7 +11,6 @@ const reminders = store.get("reminders");
 if (!reminders) {
   store.set("reminders", []);
 }
-
 const delReminders = store.get("del_reminders");
 if (!delReminders) {
   store.set("del_reminders", []);
