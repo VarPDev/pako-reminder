@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, Notification } = require("electron");
 const path = require("node:path");
 const { channels } = require("./shared/constants");
 import Store from "electron-store";
+const { isAfter, isSameDay } = require("date-fns");
 
 const store = new Store();
 
@@ -24,10 +25,7 @@ const createWindow = () => {
   });
 
   ipcMain.on(channels.SEND_NOTIFICATION, (event, { title, body }) => {
-    new Notification({
-      title,
-      body,
-    }).show();
+    sendNotification({ title, body });
 
     // new window.Notification(title, {
     //   body,
@@ -51,11 +49,66 @@ const createWindow = () => {
     return reminders;
   });
 
+  ipcMain.handle(channels.DEL_REMINDER, (event, id) => {
+    const reminders = store.get("reminders");
+    store.set(
+      "reminders",
+      reminders.filter((r) => r.id !== id)
+    );
+  });
+
   // and load the index.html of the app.
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   window.webContents.openDevTools();
+
+  const sendNotification = ({ title, body }) => {
+    new Notification({
+      title,
+      body,
+    }).show();
+  };
+
+  const jobNotification = () => {
+    let reminders = store.get("reminders");
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDay();
+
+    reminders = reminders.filter(
+      (r) =>
+        r.days.includes(currentDay) &&
+        (!r.lastSent || !isSameDay(currentDate, new Date(r.lastSent)))
+    );
+
+    for (const r of reminders) {
+      const rIsAfter = isAfter(
+        currentDate,
+        new Date(currentYear, currentMonth, currentDay, r.hour, r.minute)
+      );
+
+      if (rIsAfter) {
+        sendNotification({ title: r.title, body: r.body });
+        let allReminders = store.get("reminders");
+        allReminders = allReminders.map((rem) =>
+          rem.id === r.id
+            ? {
+                ...rem,
+                lastSent: new Date(),
+              }
+            : rem
+        );
+        store.set("reminders", allReminders);
+      }
+    }
+  };
+
+  setInterval(() => {
+    jobNotification();
+  }, 1000);
 };
 
 // This method will be called when Electron has finished

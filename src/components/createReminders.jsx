@@ -1,22 +1,28 @@
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export default function CreateReminders() {
-  const [formData, setFormData] = useState({
-    title: "",
-    body: "",
-    minute: "",
-    hour: "",
-    days: [],
-  });
+  const defaultFormDate = () => {
+    return {
+      title: "",
+      body: "",
+      minute: "",
+      hour: "",
+      days: [],
+      id: uuidv4(),
+    };
+  };
+
+  const [formData, setFormData] = useState(defaultFormDate());
 
   const days = [
+    "Sunday",
     "Monday",
     "Thuesday",
     "Wednesday",
     "Thursday",
     "Friday",
     "Saturday",
-    "Sunday",
   ];
 
   const handleChange = (event) => {
@@ -37,6 +43,7 @@ export default function CreateReminders() {
   const handleSubmit = (event) => {
     event.preventDefault();
     window.saveReminder(formData);
+    setFormData(defaultFormDate());
     // alert(
     //   `${formData.title}, Body: ${formData.body}, ${JSON.stringify(
     //     formData.days
