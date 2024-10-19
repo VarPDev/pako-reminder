@@ -1,4 +1,10 @@
-const { app, BrowserWindow, ipcMain, Notification } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Notification,
+  dialog,
+} = require("electron");
 const path = require("node:path");
 const { channels } = require("./shared/constants");
 import Store from "electron-store";
@@ -94,6 +100,16 @@ const createWindow = () => {
     }).show();
   };
 
+  const openDialog = ({ title, body }) => {
+    window.setAlwaysOnTop(true);
+    dialog.showMessageBox(window, {
+      title: title,
+      message: body,
+      type: "info",
+    });
+    window.setAlwaysOnTop(false);
+  };
+
   const jobNotification = () => {
     let reminders = store.get("reminders");
 
@@ -116,6 +132,7 @@ const createWindow = () => {
 
       if (rIsAfter) {
         sendNotification({ title: r.title, body: r.body });
+        // openDialog({ title: r.title, body: r.body });
         let allReminders = store.get("reminders");
         allReminders = allReminders.map((rem) =>
           rem.id === r.id
