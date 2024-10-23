@@ -3,12 +3,12 @@ const {
   BrowserWindow,
   dialog,
 } = require("electron");
-import Store from "electron-store";
 import { initEvents, sendNotification } from "./events";
+import Store from "./store/reminderStore";
 import isDev from "./utilities/is-dev";
 const { isAfter, isSameDay } = require("date-fns");
 
-const store = new Store({name: `${isDev ? 'development' : 'production'}-reminders`});
+const store = Store.getInstance().getStore()
 
 const reminders = store.get("reminders");
 

@@ -1,5 +1,8 @@
 import { ipcMain } from "electron";
 import { channels } from "../shared/constants";
+import Store from "../store/reminderStore";
+
+const store = Store.getInstance().getStore()
 
 export const sendNotification = ({ title, body }) => {
   new Notification({
@@ -8,7 +11,7 @@ export const sendNotification = ({ title, body }) => {
   }).show();
 };
 
-export const initEvents = (store) => {
+export const initEvents = () => {
   ipcMain.on(channels.SEND_NOTIFICATION, (event, { title, body }) => {
     sendNotification({ title, body });
 
