@@ -11,7 +11,7 @@ import Store from "electron-store";
 import isDev from "./utilities/is-dev";
 const { isAfter, isSameDay } = require("date-fns");
 
-const store = new Store();
+const store = new Store({name: `${isDev ? 'development' : 'production'}-reminders`});
 
 const reminders = store.get("reminders");
 
