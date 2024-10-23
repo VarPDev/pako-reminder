@@ -11,12 +11,6 @@ export default function RemindersBusket() {
     setReminders(await window.getDelReminders());
   };
 
-  const onDelReminder = (id) => {
-    console.log("🚀 ~ onDelReminder ~ id:", id);
-    window.delReminder(id);
-    setReminders(reminders.filter((r) => r.id !== id));
-  };
-
   return (
     <div className="p-2">
       <h1 className="font-bold mb-4">DEL Reminders:</h1>

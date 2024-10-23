@@ -12,7 +12,6 @@ export default function Reminders() {
   };
 
   const onDelReminder = (id) => {
-    console.log("🚀 ~ onDelReminder ~ id:", id);
     window.delReminder(id);
     setReminders(reminders.filter((r) => r.id !== id));
   };
