@@ -2,9 +2,11 @@ import Store from "electron-store";
 import isDev from "../utilities/is-dev";
 
 let instance;
-const store = new Store({name: `${isDev ? 'development' : 'production'}-reminders`});
+// const store = new Store({name: `${isDev ? 'development' : 'production'}-reminders`});
 
 class ReminderStore {
+  store = new Store({name: `${isDev ? 'development' : 'production'}-reminders`});
+
   constructor() {
     if (instance) {
       throw new Error("You can only create one instance!");
@@ -17,7 +19,7 @@ class ReminderStore {
   }
 
   getStore() {
-    return store;
+    return this.store;
   }
 }
 

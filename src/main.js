@@ -8,7 +8,7 @@ import Store from "./store/reminderStore";
 import isDev from "./utilities/is-dev";
 const { isAfter, isSameDay } = require("date-fns");
 
-const store = Store.getInstance().getStore()
+const store = Store.getStore()
 
 const reminders = store.get("reminders");
 

@@ -2,7 +2,7 @@ import { ipcMain } from "electron";
 import { channels } from "../shared/constants";
 import Store from "../store/reminderStore";
 
-const store = Store.getInstance().getStore()
+const store = Store.getStore()
 
 export const sendNotification = ({ title, body }) => {
   new Notification({
