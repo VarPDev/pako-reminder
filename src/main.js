@@ -8,6 +8,7 @@ const {
 const path = require("node:path");
 const { channels } = require("./shared/constants");
 import Store from "electron-store";
+import isDev from "./utilities/is-dev";
 const { isAfter, isSameDay } = require("date-fns");
 
 const store = new Store();
@@ -38,6 +39,7 @@ const createWindow = () => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: isDev
     },
     autoHideMenuBar: true,
   });
