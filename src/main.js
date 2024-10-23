@@ -14,6 +14,8 @@ const store = new Store();
 
 const reminders = store.get("reminders");
 
+const REMINDER_CHECK = 1000 * 60
+
 if (!reminders) {
   store.set("reminders", []);
 }
@@ -116,19 +118,24 @@ const createWindow = () => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    const currentDay = currentDate.getDay();
+    const currentWeekDay = currentDate.getDay();
+    const currentDay = currentDate.getDate();
 
     reminders = reminders.filter(
       (r) =>
-        r.days.includes(currentDay) &&
+        r.days.includes(currentWeekDay) &&
         (!r.lastSent || !isSameDay(currentDate, new Date(r.lastSent)))
     );
 
     for (const r of reminders) {
-      const rIsAfter = isAfter(
-        currentDate,
-        new Date(currentYear, currentMonth, currentDay, r.hour, r.minute)
+      const dateToCheck = new Date(
+        currentYear,
+        currentMonth,
+        currentDay,
+        r.hour,
+        r.minute
       );
+      const rIsAfter = isAfter(currentDate, dateToCheck);
 
       if (rIsAfter) {
         sendNotification({ title: r.title, body: r.body });
@@ -149,7 +156,7 @@ const createWindow = () => {
 
   setInterval(() => {
     jobNotification();
-  }, 1000);
+  }, REMINDER_CHECK);
 };
 
 // This method will be called when Electron has finished
