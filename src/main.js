@@ -2,10 +2,15 @@ const {
   app,
   BrowserWindow,
   dialog,
+  Menu,
+  nativeImage,
+  Tray
 } = require("electron");
-import { initEvents, sendNotification } from "./events";
-import Store from "./store/reminderStore";
-import isDev from "./utilities/is-dev";
+import path from 'path'
+import { initEvents, sendNotification } from "./events"
+import Store from "./store/reminderStore"
+import isDev from "./utilities/is-dev"
+
 const { isAfter, isSameDay } = require("date-fns");
 
 const store = Store.getStore()
@@ -13,6 +18,8 @@ const store = Store.getStore()
 const reminders = store.get("reminders");
 
 const REMINDER_CHECK = 1000 * 60
+
+let tray = null
 
 if (!reminders) {
   store.set("reminders", []);
@@ -27,7 +34,34 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+function createTray () {
+  const icon = path.join(__dirname, '/app.png') // required.
+  const trayicon = nativeImage.createFromPath(icon)
+  tray = new Tray(trayicon.resize({ width: 16 }))
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App',
+      click: () => {
+        createWindow()
+      }
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit() // actually quit the app.
+      }
+    },
+  ])
+
+  tray.setContextMenu(contextMenu)
+}
+
 const createWindow = () => {
+  if (!tray) { // if tray hasn't been created already.
+    createTray()
+    initEvents(store)
+  }
+
   // Create the browser window.
   const window = new BrowserWindow({
     width: 800,
@@ -40,8 +74,6 @@ const createWindow = () => {
     },
     autoHideMenuBar: true,
   });
-
-  initEvents(store)
 
   // and load the index.html of the app.
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -125,9 +157,12 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
+  if (process.platform === "darwin") {
+    app.dock.hide()
   }
+  // if (process.platform !== "darwin") {
+  //   app.quit();
+  // }
 });
 
 // In this file you can include the rest of your app's specific main process

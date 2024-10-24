@@ -1,6 +1,6 @@
-import { ipcMain } from "electron";
-import { channels } from "../shared/constants";
-import Store from "../store/reminderStore";
+import { ipcMain, Notification } from "electron"
+import { channels } from "../shared/constants"
+import Store from "../store/reminderStore"
 
 const store = Store.getStore()
 
