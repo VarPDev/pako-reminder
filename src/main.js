@@ -56,10 +56,56 @@ function createTray () {
   tray.setContextMenu(contextMenu)
 }
 
+const jobNotification = () => {
+  let reminders = store.get("reminders");
+
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentWeekDay = currentDate.getDay();
+  const currentDay = currentDate.getDate();
+
+  reminders = reminders.filter(
+    (r) =>
+      r.days.includes(currentWeekDay) &&
+      (!r.lastSent || !isSameDay(currentDate, new Date(r.lastSent)))
+  );
+
+  for (const r of reminders) {
+    const dateToCheck = new Date(
+      currentYear,
+      currentMonth,
+      currentDay,
+      r.hour,
+      r.minute
+    );
+    const rIsAfter = isAfter(currentDate, dateToCheck);
+
+    if (rIsAfter) {
+      sendNotification({ title: r.title, body: r.body });
+      // openDialog({ title: r.title, body: r.body });
+      let allReminders = store.get("reminders");
+      allReminders = allReminders.map((rem) =>
+        rem.id === r.id
+          ? {
+              ...rem,
+              lastSent: new Date(),
+            }
+          : rem
+      );
+      store.set("reminders", allReminders);
+    }
+  }
+};
+
 const createWindow = () => {
   if (!tray) { // if tray hasn't been created already.
     createTray()
     initEvents(store)
+
+    setInterval(() => {
+      jobNotification();
+    }, REMINDER_CHECK);
   }
 
   // Create the browser window.
@@ -90,52 +136,6 @@ const createWindow = () => {
     });
     window.setAlwaysOnTop(false);
   };
-
-  const jobNotification = () => {
-    let reminders = store.get("reminders");
-
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const currentWeekDay = currentDate.getDay();
-    const currentDay = currentDate.getDate();
-
-    reminders = reminders.filter(
-      (r) =>
-        r.days.includes(currentWeekDay) &&
-        (!r.lastSent || !isSameDay(currentDate, new Date(r.lastSent)))
-    );
-
-    for (const r of reminders) {
-      const dateToCheck = new Date(
-        currentYear,
-        currentMonth,
-        currentDay,
-        r.hour,
-        r.minute
-      );
-      const rIsAfter = isAfter(currentDate, dateToCheck);
-
-      if (rIsAfter) {
-        sendNotification({ title: r.title, body: r.body });
-        // openDialog({ title: r.title, body: r.body });
-        let allReminders = store.get("reminders");
-        allReminders = allReminders.map((rem) =>
-          rem.id === r.id
-            ? {
-                ...rem,
-                lastSent: new Date(),
-              }
-            : rem
-        );
-        store.set("reminders", allReminders);
-      }
-    }
-  };
-
-  setInterval(() => {
-    jobNotification();
-  }, REMINDER_CHECK);
 };
 
 // This method will be called when Electron has finished
