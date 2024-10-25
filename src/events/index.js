@@ -1,10 +1,31 @@
-import { ipcMain, Notification } from "electron"
+import { ipcMain, net, Notification } from "electron"
 import { channels } from "../shared/constants"
 import Store from "../store/reminderStore"
 
 const store = Store.getStore()
 
-export const sendNotification = ({ title, body }) => {
+export const sendNotification = (reminder) => {
+  switch(true) {
+    case reminder.enableTelegram:
+      sendTelegramNotification(reminder)
+    default: 
+      sendDesktopNotification({ title: reminder.title, body: reminder.body })
+  }
+};
+
+const sendTelegramNotification = ({telegramToken, telegramChannel, title, body}) => {
+  if (net.online) {
+    const text = `*${title}*\n\n${body}`
+    const request = net.request(
+      `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${telegramChannel}&text=${text}&parse_mode=markdown`
+    )
+    request.end()
+  } else {
+    console.log("�� No internet connection, notifications won't be sent.");
+  }
+}
+
+const sendDesktopNotification = ({ title, body }) => {
   new Notification({
     title,
     body,
