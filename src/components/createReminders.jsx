@@ -12,6 +12,7 @@ export default function CreateReminders() {
       enableTelegram: false,
       telegramToken: "",
       telegramChannel: "",
+      isOneShot: false,
       id: uuidv4(),
     };
   };
@@ -33,7 +34,7 @@ export default function CreateReminders() {
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleCheckbox = (event, index) => {
+  const handleCheckboxRecurrent = (event, index) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => {
       const array = prevFormData[name].includes(index)
@@ -43,15 +44,15 @@ export default function CreateReminders() {
     });
   };
 
+  const handleCheckbox = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: !prevFormData[name] }));
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     window.saveReminder(formData);
     setFormData(defaultFormDate());
-    // alert(
-    //   `${formData.title}, Body: ${formData.body}, ${JSON.stringify(
-    //     formData.days
-    //   )}`
-    // );
   };
 
   return (
@@ -112,6 +113,47 @@ export default function CreateReminders() {
         </div>
       </div>
 
+      <div className="form-control">
+        <label className="label cursor-pointer gap-2 p-0">
+          <span className="label-text">Enable telegram notification</span>
+          <input
+            name="enableTelegram"
+            onChange={(e) => handleCheckbox(e)}
+            type="checkbox"
+            className="checkbox checkbox-primary"
+          />
+        </label>
+      </div>
+
+      {formData.enableTelegram && (<>
+        <div className="flex items-center gap-2">
+          <label htmlFor="title">BOT Token:</label>
+          <input
+            value={formData.name}
+            onChange={handleChange}
+            required
+            type="text"
+            id="telegramToken"
+            name="telegramToken"
+            placeholder="Telegram Token"
+            className="input input-bordered w-full max-w-xs"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="title">Chat id:</label>
+          <input
+            value={formData.name}
+            onChange={handleChange}
+            required
+            type="text"
+            id="telegramChannel"
+            name="telegramChannel"
+            placeholder="Telegram Channel"
+            className="input input-bordered w-full max-w-xs"
+          />
+        </div>
+      </>)}
+
       <div className="font-bold">Repeat on:</div>
 
       {days.map((d, i) => (
@@ -120,7 +162,7 @@ export default function CreateReminders() {
             <span className="label-text">{d}</span>
             <input
               name="days"
-              onChange={(e) => handleCheckbox(e, i)}
+              onChange={(e) => handleCheckboxRecurrent(e, i)}
               type="checkbox"
               className="checkbox checkbox-primary"
             />
