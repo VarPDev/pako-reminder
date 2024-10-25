@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import Datepicker from "react-tailwindcss-datepicker"
 import { v4 as uuidv4 } from "uuid"
 
 export default function CreateReminders() {
@@ -13,9 +14,15 @@ export default function CreateReminders() {
       telegramToken: "",
       telegramChannel: "",
       isOneShot: false,
+      dateOneShot: null,
       id: uuidv4(),
     };
   };
+
+  const [dateOneShotValue, setOneShotValue] = useState({ 
+    startDate: null, 
+    endDate: null
+  });
 
   const [formData, setFormData] = useState(defaultFormDate());
 
@@ -48,6 +55,11 @@ export default function CreateReminders() {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: !prevFormData[name] }));
   };
+
+  const handleChangeDate = (name, value) => {
+    console.log("🚀 ~ handleChangeDate ~ value:", name, value.startDate)
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value.startDate }));
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -154,21 +166,45 @@ export default function CreateReminders() {
         </div>
       </>)}
 
-      <div className="font-bold">Repeat on:</div>
+      <div className="form-control">
+        <label className="label cursor-pointer gap-2 p-0">
+          <span className="label-text">Is one shot</span>
+          <input
+            name="isOneShot"
+            onChange={(e) => handleCheckbox(e)}
+            type="checkbox"
+            className="checkbox checkbox-primary"
+          />
+        </label>
+      </div>
 
-      {days.map((d, i) => (
-        <div className="w-[33%]" key={i}>
-          <label className="label cursor-pointer gap-2 p-0">
-            <span className="label-text">{d}</span>
-            <input
-              name="days"
-              onChange={(e) => handleCheckboxRecurrent(e, i)}
-              type="checkbox"
-              className="checkbox checkbox-primary"
-            />
-          </label>
-        </div>
-      ))}
+      {formData.isOneShot && <>
+        <Datepicker
+            value={dateOneShotValue}
+            onChange={newValue => {handleChangeDate('dateOneShot', newValue); setOneShotValue(newValue)}}
+            showShortcuts={true}
+            asSingle={true}
+            useRange={false}
+        /> 
+      </>}
+
+      {!formData.isOneShot && (<>
+        <div className="font-bold">Repeat on:</div>
+
+        {days.map((d, i) => (
+          <div className="w-[33%]" key={i}>
+            <label className="label cursor-pointer gap-2 p-0">
+              <span className="label-text">{d}</span>
+              <input
+                name="days"
+                onChange={(e) => handleCheckboxRecurrent(e, i)}
+                type="checkbox"
+                className="checkbox checkbox-primary"
+              />
+            </label>
+          </div>
+        ))}
+      </>)}
 
       <button className="btn" type="submit">
         Create reminder

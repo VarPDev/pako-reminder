@@ -7,11 +7,11 @@ const {
   Tray
 } = require("electron");
 import path from 'path'
-import { initEvents, sendNotification } from "./events"
+import { deleteReminder, initEvents, sendNotification } from "./events"
 import Store from "./store/reminderStore"
 import isDev from "./utilities/is-dev"
 
-const { isAfter, isSameDay } = require("date-fns");
+const { isAfter, isSameDay, isBefore } = require("date-fns");
 
 const store = Store.getStore()
 
@@ -65,13 +65,19 @@ const jobNotification = () => {
   const currentWeekDay = currentDate.getDay();
   const currentDay = currentDate.getDate();
 
-  reminders = reminders.filter(
+  const remindersRecurrent = reminders.filter(
     (r) =>
+      !r.isOneShot &&
       r.days.includes(currentWeekDay) &&
       (!r.lastSent || !isSameDay(currentDate, new Date(r.lastSent)))
   );
 
-  for (const r of reminders) {
+  const remindersOneShot = reminders.filter(
+    (r) =>
+      r.isOneShot && isBefore(r.dateOneShot, currentDate) 
+  );
+
+  for (const r of remindersRecurrent) {
     const dateToCheck = new Date(
       currentYear,
       currentMonth,
@@ -79,24 +85,49 @@ const jobNotification = () => {
       r.hour,
       r.minute
     );
-    const rIsAfter = isAfter(currentDate, dateToCheck);
+    const notify = isAfter(currentDate, dateToCheck);
 
-    if (rIsAfter) {
-      sendNotification(r);
-      // openDialog({ title: r.title, body: r.body });
-      let allReminders = store.get("reminders");
-      allReminders = allReminders.map((rem) =>
-        rem.id === r.id
-          ? {
-              ...rem,
-              lastSent: new Date(),
-            }
-          : rem
-      );
-      store.set("reminders", allReminders);
+    if (notify) {
+      notifyUser(r, currentDate, dateToCheck)
+    }
+  }
+
+  for (const r of remindersOneShot) {
+    const dateToCheck = new Date(
+      currentYear,
+      currentMonth,
+      currentDay,
+      r.hour,
+      r.minute
+    );
+    
+    if (!isSameDay(currentDate, new Date(r.dateOneShot))) {
+      deleteReminder(r.id, false)
+    } else {
+      notifyUser(r, currentDate, dateToCheck)
+      deleteReminder(r.id, false)
     }
   }
 };
+
+const notifyUser = (r, currentDate, dateToCheck) => {
+  const notify = isAfter(currentDate, dateToCheck);
+
+  if (notify) {
+    sendNotification(r);
+    // openDialog({ title: r.title, body: r.body });
+    let allReminders = store.get("reminders");
+    allReminders = allReminders.map((rem) =>
+      rem.id === r.id
+        ? {
+            ...rem,
+            lastSent: new Date(),
+          }
+        : rem
+    );
+    store.set("reminders", allReminders);
+  }
+}
 
 const createWindow = () => {
   if (!tray) { // if tray hasn't been created already.

@@ -30,6 +30,25 @@ const sendDesktopNotification = ({ title, body }) => {
   }).show();
 };
 
+export const deleteReminder = (id, safeDelete = true) => {
+  const reminders = store.get("reminders");
+
+  const remToDelete = reminders.find((r) => r.id === id);
+
+  store.set(
+    "reminders",
+    reminders.filter((r) => r.id !== id)
+  );
+
+  if (safeDelete){
+    const old = store.get("del_reminders");
+    store.set(
+      "del_reminders",
+      old && Array.isArray(old) ? [...old, remToDelete] : [remToDelete]
+    );
+  }
+}
+
 export const initEvents = () => {
   ipcMain.on(channels.SEND_NOTIFICATION, (event, { title, body }) => {
     sendNotification({ title, body });
@@ -62,19 +81,6 @@ export const initEvents = () => {
   });
 
   ipcMain.on(channels.DEL_REMINDER, (event, id) => {
-    const reminders = store.get("reminders");
-
-    const remToDelete = reminders.find((r) => r.id === id);
-
-    store.set(
-      "reminders",
-      reminders.filter((r) => r.id !== id)
-    );
-
-    const old = store.get("del_reminders");
-    store.set(
-      "del_reminders",
-      old && Array.isArray(old) ? [...old, remToDelete] : [remToDelete]
-    );
+    deleteReminder(id)
   });
 }

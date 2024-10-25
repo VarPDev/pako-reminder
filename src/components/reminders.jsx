@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 
 export default function Reminders() {
   const [reminders, setReminders] = useState([]);
@@ -27,6 +27,7 @@ export default function Reminders() {
               <th>Body</th>
               <th>Hour</th>
               <th>Minute</th>
+              <th>One Shot</th>
               <th></th>
             </tr>
           </thead>
@@ -37,6 +38,7 @@ export default function Reminders() {
                 <td>{reminder.body}</td>
                 <td>{reminder.hour}</td>
                 <td>{reminder.minute}</td>
+                <td>{reminder.isOneShot ? 'Y' : 'N'}</td>
                 <td>
                   <button
                     onClick={() => onDelReminder(reminder.id)}
