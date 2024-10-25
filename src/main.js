@@ -82,7 +82,7 @@ const jobNotification = () => {
     const rIsAfter = isAfter(currentDate, dateToCheck);
 
     if (rIsAfter) {
-      sendNotification({ title: r.title, body: r.body });
+      sendNotification(r);
       // openDialog({ title: r.title, body: r.body });
       let allReminders = store.get("reminders");
       allReminders = allReminders.map((rem) =>

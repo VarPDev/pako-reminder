@@ -1,4 +1,5 @@
 import { ipcMain, net, Notification } from "electron"
+import { Telegraf } from "telegraf"
 import { channels } from "../shared/constants"
 import Store from "../store/reminderStore"
 
@@ -15,13 +16,10 @@ export const sendNotification = (reminder) => {
 
 const sendTelegramNotification = ({telegramToken, telegramChannel, title, body}) => {
   if (net.online) {
-    const text = `*${title}*\n\n${body}`
-    const request = net.request(
-      `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${telegramChannel}&text=${text}&parse_mode=markdown`
-    )
-    request.end()
+    const bot = new Telegraf(telegramToken)
+    bot.telegram.sendMessage(telegramChannel, `*${title}*\n\n${body}`, { parse_mode: "MarkdownV2" })
   } else {
-    console.log("�� No internet connection, notifications won't be sent.");
+    console.log("�� No internet connection, telegram notifications won't be sent.");
   }
 }
 
