@@ -104,13 +104,12 @@ const jobNotification = () => {
     if (!isSameDay(currentDate, new Date(r.dateOneShot))) {
       deleteReminder(r.id, false)
     } else {
-      notifyUser(r, currentDate, dateToCheck)
-      deleteReminder(r.id, false)
+      notifyUser(r, currentDate, dateToCheck, true)
     }
   }
 };
 
-const notifyUser = (r, currentDate, dateToCheck) => {
+const notifyUser = (r, currentDate, dateToCheck, deleteReminder = false) => {
   const notify = isAfter(currentDate, dateToCheck);
 
   if (notify) {
@@ -126,6 +125,10 @@ const notifyUser = (r, currentDate, dateToCheck) => {
         : rem
     );
     store.set("reminders", allReminders);
+
+    if (deleteReminder) {
+      deleteReminder(r.id, false)
+    }
   }
 }
 
