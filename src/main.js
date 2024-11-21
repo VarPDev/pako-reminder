@@ -109,7 +109,7 @@ const jobNotification = () => {
   }
 };
 
-const notifyUser = (r, currentDate, dateToCheck, deleteReminder = false) => {
+const notifyUser = (r, currentDate, dateToCheck, toDeleteReminder = false) => {
   const notify = isAfter(currentDate, dateToCheck);
 
   if (notify) {
@@ -126,7 +126,7 @@ const notifyUser = (r, currentDate, dateToCheck, deleteReminder = false) => {
     );
     store.set("reminders", allReminders);
 
-    if (deleteReminder) {
+    if (toDeleteReminder) {
       deleteReminder(r.id, false)
     }
   }
